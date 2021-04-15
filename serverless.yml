@@ -1,4 +1,4 @@
-service: name
+service: users-service
 
 frameworkVersion: "2"
 
@@ -7,35 +7,89 @@ provider:
   runtime: nodejs12.x
   region: eu-west-1
   lambdaHashingVersion: 20201221
+  stage: ${opt:stage, "dev"}
 
 plugins:
   - serverless-webpack
-  - serverless-dynamodb-local
-  - serverless-dynamodb-seed
   - serverless-offline
 
 resources:
   Resources:
-    ApiGatewayAuthorizer:
-      Type: AWS::ApiGateway::Authorizer
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
       Properties:
-        AuthorizerResultTtlInSeconds: 300
-        IdentitySource: method.request.header.Authorization
-        Name: Cognito
-        RestApiId: # API id, ref
-          Type: COGNITO_USER_POOLS
-        ProviderARNs:
-          -  # Cognito ARN
+        UserPoolName: ${self:provider.stage}-userpool
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: true
+            RequireUppercase: true
+        VerificationMessageTemplate:
+          DefaultEmailOption: CONFIRM_WITH_CODE 
+          EmailSubject: "EmporioLambda - Verify your email"
+          EmailMessage: "Here is your email verification code: <strong>{####}</strong>"
+        AccountRecoverySetting:
+          RecoveryMechanisms:
+            - Name: verified_email
+              Priority: 1
+        DeviceConfiguration:
+          DeviceOnlyRememberedOnUserPrompt: true
+        Schema:
+          - Mutable: true
+            Required: true
+            Name: firstName
+          - Mutable: true
+            Required: true
+            Name: lastName
+          - Mutable: true
+            Required: true
+            Name: email
+           
 
-custom:
-  dynamodb:
-    stages:
-      - dev
-    start:
-      port: 8000
-      inMemory: true
-      migrate: true
-      seed: true
-      convertEmptyValues: true
-    migration:
-      dir: ./offline
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: ${self:provider.stage}-user-pool-client
+        AllowedOAuthFlows:
+          - code
+          - implicit
+        AllowedOAuthFlowsUserPoolClient: true
+        AllowedOAuthScopes:
+          - email
+          - openid
+          - profile
+        UserPoolId:
+          Ref: CognitoUserPool
+        ExplicitAuthFlows:
+          - ALLOW_CUSTOM_AUTH
+          - ALLOW_USER_SRP_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        TokenValidityUnits:
+          AccessToken: hours
+          IdToken: hours
+          RefreshToken: days
+        AccessTokenValidity: 1 # default: 1 ora
+        IdTokenValidity: 1 # default: 1 ora
+        RefreshTokenValidity: 30 # default: 30 giorni
+
+    CognitoGroupBuyers:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        Description: Group of all buyers 
+        GroupName: buyers
+        UserPoolId:
+          Ref: CognitoUserPool
+
+    CognitoGroupSellers:
+      Type: AWS::Cognito::UserPoolGroup
+      Properties:
+        Description: Group of all sellers
+        GroupName: sellers
+        UserPoolId:
+          Ref: CognitoUserPool
