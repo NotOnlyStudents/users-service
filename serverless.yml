@@ -8,6 +8,8 @@ provider:
   region: eu-west-1
   lambdaHashingVersion: 20201221
   stage: ${opt:stage, "dev"}
+  environment:
+    CALLBACK_URL: "http://localhost:3000"
 
 plugins:
   - serverless-webpack
@@ -26,7 +28,7 @@ resources:
     CognitoUserPool:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: ${self:provider.stage}-userpool
+        UserPoolName: ${self:provider.stage}-user-pool
         UsernameAttributes:
           - email
         AutoVerifiedAttributes:
@@ -49,14 +51,17 @@ resources:
         DeviceConfiguration:
           DeviceOnlyRememberedOnUserPrompt: true
         Schema:
-          - Mutable: true
-            Required: true
+          - AttributeDataType: String
+            Mutable: true
+            Required: false
             Name: firstName
-          - Mutable: true
-            Required: true
+          - AttributeDataType: String
+            Mutable: true
+            Required: false
             Name: lastName
-          - Mutable: true
-            Required: true
+          - AttributeDataType: String
+            Mutable: true
+            Required: false
             Name: email
            
     CognitoUserPoolClient:
@@ -73,6 +78,8 @@ resources:
           - profile
         UserPoolId:
           Ref: CognitoUserPool
+        CallbackURLs:
+          - ${self:provider.environment.CALLBACK_URL}
         ExplicitAuthFlows:
           - ALLOW_CUSTOM_AUTH
           - ALLOW_USER_SRP_AUTH

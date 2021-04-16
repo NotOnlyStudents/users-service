@@ -12,7 +12,7 @@ const handler: PostConfirmationTriggerHandler = async (
     callback: Callback
 ): Promise<void> => {
     try {
-        const result = postSignUpTrigger(event);
+        const result = await postSignUpTrigger(event);
         callback(null, result);
     } catch (error) {
         callback(error, event);
