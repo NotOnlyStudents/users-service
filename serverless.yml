@@ -13,6 +13,14 @@ plugins:
   - serverless-webpack
   - serverless-offline
 
+functions:
+  postSignUpTrigger:
+    handler: src/endpoints/postSignUpTrigger.handler
+    events:
+      - cognitoUserPool:
+          pool: ${self:provider.stage}-userpool
+          trigger: PostConfirmation
+
 resources:
   Resources:
     CognitoUserPool:
@@ -51,7 +59,6 @@ resources:
             Required: true
             Name: email
            
-
     CognitoUserPoolClient:
       Type: AWS::Cognito::UserPoolClient
       Properties:
