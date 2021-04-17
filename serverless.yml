@@ -20,8 +20,9 @@ functions:
     handler: src/endpoints/postSignUpTrigger.handler
     events:
       - cognitoUserPool:
-          pool: ${self:provider.stage}-userpool
+          pool: ${self:provider.stage}-user-pool
           trigger: PostConfirmation
+          existing: true
 
 resources:
   Resources:
