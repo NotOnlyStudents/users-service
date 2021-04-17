@@ -8,6 +8,14 @@ provider:
   region: eu-west-1
   lambdaHashingVersion: 20201221
   stage: ${opt:stage, "dev"}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminAddUserToGroup
+            - sns:Publish
+          Resource: '*'
   environment:
     CALLBACK_URL: "http://localhost:3000"
     REGION: ${self:provider.region}
@@ -17,9 +25,18 @@ plugins:
   - serverless-webpack
   - serverless-offline
 
+package:
+  individually: true
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
 functions:
   postSignUpTrigger:
-    handler: src/endpoints/postSignUpTrigger.handler
+    handler: src/endpoints/postSignUpTrigger.default
+    description: Every new user who confirms his email, he will be assigned to "buyers" user group
     events:
       - cognitoUserPool:
           pool: ${self:provider.stage}-user-pool
