@@ -10,6 +10,8 @@ provider:
   stage: ${opt:stage, "dev"}
   environment:
     CALLBACK_URL: "http://localhost:3000"
+    REGION: ${self:provider.region}
+    NEW_USER_TOPIC: "arn:aws:sns:eu-west-1:501082649462:NewUser.fifo"
 
 plugins:
   - serverless-webpack

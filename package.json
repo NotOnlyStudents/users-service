@@ -40,6 +40,7 @@
     "widdershins": "^4.0.1"
   },
   "dependencies": {
+    "@aws-sdk/client-sns": "^3.13.0",
     "@aws/dynamodb-data-mapper": "^0.7.3",
     "@aws/dynamodb-data-mapper-annotations": "^0.7.3",
     "@curveball/http-errors": "^0.4.0",
