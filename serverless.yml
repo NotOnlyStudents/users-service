@@ -127,3 +127,9 @@ resources:
         GroupName: sellers
         UserPoolId:
           Ref: CognitoUserPool
+      
+  Outputs:
+    CogntioUserPoolArn:
+      Value: !GetAtt CognitoUserPool.Arn
+      Export:
+        Name: ${self:provider.stage}-user-pool-arn
