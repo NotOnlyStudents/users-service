@@ -1,25 +1,16 @@
 import {
   PostConfirmationConfirmSignUpTriggerEvent,
-  PostConfirmationTriggerHandler,
-  Callback,
-  Context,
+  PostConfirmationTriggerHandler
 } from 'aws-lambda';
 import postSignUpTrigger from '../lambdas/postSignUpTrigger';
 import dispatchSnsTopic from '../lambdas/dispatchSnsTopic';
+import { ServiceOutputTypes } from '@aws-sdk/client-sns';
 
 const handler: PostConfirmationTriggerHandler = async (
-  event: PostConfirmationConfirmSignUpTriggerEvent,
-  _context: Context,
-  callback: Callback,
-): Promise<void> => {
-  try {
-    const username = await postSignUpTrigger(event);
-    const msg = await dispatchSnsTopic(username);
-
-    callback(null, msg);
-  } catch (error) {
-    callback(error, event);
-  }
+  event: PostConfirmationConfirmSignUpTriggerEvent
+): Promise<ServiceOutputTypes> => {
+  const username = await postSignUpTrigger(event);
+  return dispatchSnsTopic(username);
 };
 
 export default handler;
