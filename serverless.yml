@@ -102,6 +102,7 @@ resources:
           - ${self:provider.environment.CALLBACK_URL}
         ExplicitAuthFlows:
           - ALLOW_CUSTOM_AUTH
+          - ALLOW_USER_PASSWORD_AUTH
           - ALLOW_USER_SRP_AUTH
           - ALLOW_REFRESH_TOKEN_AUTH
         TokenValidityUnits:
