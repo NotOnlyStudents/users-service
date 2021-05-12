@@ -1,9 +1,0 @@
-{
-    "triggerSource": "testTrigger",
-    "userPoolId": "eu-west-1_GYzQYokTb",
-    "userName": "leonardo.tredese@studenti.unipd.it",
-    "callerContext": {
-        "clientId": "12345"
-    },
-    "response": {}
-}
