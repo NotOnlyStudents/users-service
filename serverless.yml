@@ -14,12 +14,10 @@ provider:
         - Effect: Allow
           Action:
             - cognito-idp:AdminAddUserToGroup
-            - sns:Publish
           Resource: '*'
   environment:
     CALLBACK_URL: "http://localhost:3000"
     REGION: ${self:provider.region}
-    NEW_USER_TOPIC: "arn:aws:sns:eu-west-1:501082649462:NewUser.fifo"
 
 plugins:
   - serverless-webpack
