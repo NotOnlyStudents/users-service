@@ -5,7 +5,6 @@ import {
   Callback,
 } from 'aws-lambda';
 import postSignUpTrigger from '../lambdas/postSignUpTrigger';
-import dispatchSnsTopic from '../lambdas/dispatchSnsTopic';
 
 const handler: PostConfirmationTriggerHandler = async (
   event: PostConfirmationConfirmSignUpTriggerEvent,
@@ -13,8 +12,7 @@ const handler: PostConfirmationTriggerHandler = async (
   callback: Callback,
 ) => {
   try {
-    const username = await postSignUpTrigger(event);
-    await dispatchSnsTopic(username);
+    await postSignUpTrigger(event);
 
     callback(null, event);
   } catch (error) {
